@@ -94,6 +94,13 @@ function ProductModal({
           is_enabled: modalData.is_enabled ? 1 : 0,
         },
       });
+
+      dispatch(
+        pushMessage({
+          text: "新增產品成功！",
+          status: "success",
+        })
+      );
     } catch (error) {
       const { message } = error.response.data;
 
