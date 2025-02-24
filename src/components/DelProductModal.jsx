@@ -2,6 +2,8 @@ import { useEffect, useRef } from "react";
 import axios from "axios";
 import { Modal } from "bootstrap";
 import PropTypes from "prop-types"; // ES6
+import { useDispatch } from "react-redux";
+import { pushMessage } from "../slice/toastSlice";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const API_PATH = import.meta.env.VITE_API_PATH;
@@ -13,6 +15,8 @@ function DelProductModal({
   setIsDelProductModalOpen,
 }) {
   const delProductModalRef = useRef(null);
+
+  const dispatch = useDispatch();
 
   // 建立 Modal 實例
   useEffect(() => {
@@ -40,8 +44,21 @@ function DelProductModal({
       await axios.delete(
         `${BASE_URL}/v2/api/${API_PATH}/admin/product/${tempProduct.id}`
       );
+
+      dispatch(
+        pushMessage({
+          text: "刪除產品成功！",
+          status: "success",
+        })
+      );
     } catch (error) {
-      alert("刪除產品失敗：", error);
+      console.log("刪除產品失敗：", error);
+      dispatch(
+        pushMessage({
+          text: "刪除產品失敗！",
+          status: "failed",
+        })
+      );
     }
   };
 
