@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import PropTypes from "prop-types"; // ES6
 
@@ -10,6 +10,27 @@ function LoginPage({ setIsAuth }) {
     "username": "",
     "password": "",
   });
+
+  // 跳過登入流程直接取得 token 驗證登入
+  useEffect(() => {
+    const checkIsLogin = async () => {
+      try {
+        const token = document.cookie.replace(
+          // 從 cookie 取得 token
+          /(?:(?:^|.*;\s*)hexToken\s*\=\s*([^;]*).*$)|^.*$/,
+          "$1"
+        );
+        axios.defaults.headers.common["Authorization"] = token;
+
+        await axios.post(`${BASE_URL}/v2/api/user/check`);
+
+        setIsAuth(true);
+      } catch (error) {
+        console.log("確認登入失敗：", error);
+      }
+    };
+    checkIsLogin();
+  }, []);
 
   // 登入帳密輸入onChange監聽
   const handleAccountInputChange = (e) => {
