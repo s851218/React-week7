@@ -3,6 +3,8 @@ import axios from "axios";
 import Pagination from "../components/Pagination";
 import ProductModal from "../components/ProductModal";
 import DelProductModal from "../components/DelProductModal";
+import Toast from "../components/Toast";
+import { useDispatch } from "react-redux";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const API_PATH = import.meta.env.VITE_API_PATH;
@@ -21,9 +23,11 @@ const defaultModalState = {
   imagesUrl: [""],
 };
 
-function ProductPage() {
+function ProductPage({ setIsAuth }) {
   // 更新產品列表狀態
   const [products, setProducts] = useState([]);
+
+  const dispatch = useDispatch();
 
   // 獲取產品列表函式
   const fetchProducts = async (page = 1) => {
@@ -91,11 +95,32 @@ function ProductPage() {
     fetchProducts(page);
   };
 
+  // 登出
+  const handleLogout = async () => {
+    try {
+      await axios.post(`${BASE_URL}/v2/logout`);
+      setIsAuth(false);
+    } catch (error) {
+      console.log("登出失敗！", error);
+    }
+  };
+
   return (
     <>
       <div className="container">
         <div className="row mt-3">
           <div className="col">
+            <div className="row mb-3">
+              <div className="justify-content-end">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={handleLogout}
+                >
+                  登出
+                </button>
+              </div>
+            </div>
             <div className="d-flex justify-content-between">
               <h2 className="fw-bold">產品列表</h2>
               <button
@@ -176,6 +201,8 @@ function ProductPage() {
         isDelProductModalOpen={isDelProductModalOpen}
         setIsDelProductModalOpen={setIsDelProductModalOpen}
       />
+
+      <Toast />
     </>
   );
 }
