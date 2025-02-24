@@ -8,8 +8,6 @@ export default function Toast() {
 
   const toastRefs = useRef({});
 
-  console.log(toastRefs);
-
   const dispatch = useDispatch();
 
   const TOAST_DURATION = 3000;
