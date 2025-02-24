@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { Modal } from "bootstrap";
 import PropTypes from "prop-types"; // ES6
+import { useDispatch } from "react-redux";
+import { pushMessage } from "../slice/toastSlice";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const API_PATH = import.meta.env.VITE_API_PATH;
@@ -14,6 +16,8 @@ function ProductModal({
   setIsProductModalOpen,
 }) {
   const [modalData, setModalData] = useState(tempProduct);
+
+  const dispatch = useDispatch();
 
   // 當 tempProduct 更新時，要透過 setModalData 來更新 modalData
   useEffect(() => {
@@ -91,7 +95,14 @@ function ProductModal({
         },
       });
     } catch (error) {
-      throw error.response.data.message;
+      const { message } = error.response.data;
+
+      dispatch(
+        pushMessage({
+          text: message.join("、"),
+          status: "failed",
+        })
+      );
     }
   };
 
@@ -109,6 +120,13 @@ function ProductModal({
           },
         }
       );
+
+      dispatch(
+        pushMessage({
+          text: "編輯產品成功！",
+          status: "success",
+        })
+      );
     } catch (error) {
       throw error.response.data.message;
     }
@@ -123,7 +141,7 @@ function ProductModal({
       fetchProducts();
       handleCloseProductModal();
     } catch (error) {
-      alert("更新產品失敗：", error);
+      console.log("更新產品失敗：", error);
     }
   };
 
